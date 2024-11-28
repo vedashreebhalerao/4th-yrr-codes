@@ -1,0 +1,467 @@
+ASSIGNMENT NO 1-
+Title: Getting data to work with R Programming:
+i. Download the sample dataset locally for any application (Kaggle)
+ii. Setting up the working directory.
+iii. Unpacking the data. Decompress the file locally.
+iv. Looking at the data. Display the top (10) and bottom (10) of the file.
+v. Measuring the length of the data set. Count the number of lines in the file.
+vi. Encode the categorical data
+vi. Plot a graph and give your insights for the application selected cases
+
+
+CODE:
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("tidyr")
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+data<- read.csv("Iris.csv")
+summary(data)
+barplot(data$sepal_length, col = "green")
+boxplot(data[,0:4])
+plot(data$sepal_length,data$sepal_width, pch=18)
+hist(data$sepal_length, col="purple",border="black")
+pairs(~data$sepal_length+data$sepal_width+data$petal_length+data$petal_w
+idth)
+# Install and load necessary packages
+install.packages("plotly")
+library(plotly)
+set.seed(123)
+data <- data.frame(
+ X = rnorm(100, mean = 20, sd = 5),
+ Y = rnorm(100, mean = 30, sd = 8),
+ Z = rnorm(100, mean = 40, sd = 10)
+)
+plot <- plot_ly(data, x = ~X, y = ~Y, z = ~Z, type = "scatter3d", mode =
+"markers",
+ marker = list(size = 5, color = "blue")) %>%
+ layout(scene = list(
+ xaxis = list(title = "X Variable"),
+ yaxis = list(title = "Y Variable"),
+ zaxis = list(title = "Z Variable")
+ ))
+print(plot)
+
+
+
+
+ASSIGNMENT NO 2-AIM: Perform text analysis using R.
+
+code:
+install.packages("readtext")
+require(readtext) # For files import
+require(dplyr)
+require(tidytext)
+x=readtext("*.txt")
+x
+names(x)
+xx=as_tibble(x)
+xx$doc_id=c("crow","hare","lion")
+xx
+y=unnest_tokens(xx,word,text) %>%
+ anti_join(stop_words)
+y
+# table(stop_words$lexicon)
+word= y %>% count(word, sort = TRUE) %>%
+ print(n = 10)
+#=====================================
+#Visualization
+#=====================================
+library(wordcloud)
+par(mar = c(0.1,0.1,0.1,0.1))
+word %>% with(wordcloud(word, n,
+ max.words = 100,
+ min.freq = 3,
+ rot.per = .35,
+ random.order = T,
+ random.color = T,
+ colors = rainbow(8)))
+#----------------------------------
+library(wordcloud2)
+wcd <- as.data.frame(word)
+par(mar = c(0.1,0.1,0.1,0.1))
+wordcloud2(wcd[1:30, ])
+#Install and load necessary packages
+install.packages(c("tm", "tidytext", "stringr", "ggplot2", "dplyr"))
+library(tm)
+library(tidytext)
+library(stringr)
+library(ggplot2)
+library(dplyr)
+# Sample text data
+text_data <- c("R is a programming language for statistical computing and
+graphics.",
+ "It is widely used & among @ statisticians and data miners.",
+ "R is an implementation of the S programming language combined
+with lexical scoping semantics inspired by Scheme.",
+ "R is highly extensible,hs,asgh, and has many packages available
+123456.")
+# Create a corpus
+corpus <- Corpus(VectorSource(text_data))
+# Preprocess the text
+corpus <- tm_map(corpus, content_transformer(toupper))
+corpus <- tm_map(corpus, removePunctuation)
+corpus <- tm_map(corpus, removeNumbers)
+corpus <- tm_map(corpus, removeWords, stopwords("en"))
+corpus <- tm_map(corpus, stripWhitespace)
+inspect(corpus)
+
+
+
+ASSIGNMENT NO 3-
+Aim: a) To Install Apache Spark.
+b) write a program in Spark for Word Count with Unit Tests: Change Application
+
+code:
+
+def word_count(s):
+"""
+This function takes a string as input and returns the number of
+words in the string.
+"""
+words = s.split()
+return len(words)
+import unittest
+class TestWordCount(unittest.TestCase):
+def test_empty_string(self):
+self.assertEqual(word_count(""), 0)
+def test_single_word(self):
+self.assertEqual(word_count("Hello"), 1)
+def test_multiple_words(self):
+self.assertEqual(word_count("Hello world"), 2)
+def test_leading_and_trailing_spaces(self):
+self.assertEqual(word_count(" Hello world "), 2)
+def test_multiple_spaces_between_words(self):
+self.assertEqual(word_count("Hello world"), 2)
+def test_newline_characters(self):
+self.assertEqual(word_count("Hello\nworld"), 2)
+def test_tab_characters(self):
+self.assertEqual(word_count("Hello\tworld"), 2)
+# Run the tests
+unittest.main(argv=[''], verbosity=2, exit=False)
+
+
+ASSIGNMENT NO 4-Aim: 1) PySpark - Read CSV file into Data Frame
+2) Create and query a HIVE table in PySpark.
+
+code:
+import pandas as pd
+def read_csv_file(file_path):
+ return pd.read_csv(file_path)
+df = read_csv_file('C:/Users/Hp/Documents/ds_salaries.csv')
+print(df.head())
+# Example of reading a text file as input
+df_txt = pd.read_csv('C:/Users/Admin/Desktop/crow.txt', delimiter=' ')
+print(df_txt.head())
+df_txt.head()
+
+
+ASSIGNMENT NO 5-Aim: To implement the K-means clustering algorithm using R programming and analyze the
+results graphically. The analysis includes selecting an appropriate value for justifying the
+choice, and interpreting the output.
+
+code:
+install.packages("ggplot2")
+install.packages("factoextra")
+install.packages("dplyr")
+install.packages("colorspace")
+library(ggplot2)
+library(factoextra)
+library(dplyr)
+mall_customers =
+read.csv("C:\\Users\\user\\OneDrive\\Documents\\Mall_Customers.cs
+v")
+head(mall_customers)
+names(mall_customers)
+print(colnames(mall_customers))
+data <- mall_customers[c("Annual.Income..k..",
+"Spending.Score..1.100.")]
+head(data)
+data_scaled <- scale(data)
+print("scaled data")
+head(data_scaled)
+wss <- numeric(15)
+for (k in 1:15) wss[k] <- sum(kmeans(data_scaled, centers=k,
+ nstart=25)$withinss)
+plot(1:15, wss, type="b", xlab="Number of Clusters", ylab="WSS")
+fviz_nbclust(data_scaled, kmeans, method = "wss") +
+ geom_vline(xintercept = 5, linetype = 2) +
+ labs(subtitle = "Elbow method")
+# Silhouette method
+fviz_nbclust(data_scaled, kmeans, method = "silhouette") +
+ labs(subtitle = "Silhouette method")
+# Apply K-Means clustering with 3 clusters
+set.seed(123) # Set seed for reproducibility in case pythonrandom_state
+kmeans_result <- kmeans(data_scaled, centers = 5, nstart = 25)
+# Add the cluster assignments to the original dataset
+mall_customers$Cluster <- as.factor(kmeans_result$cluster)
+tail(mall_customers)
+# Scatter plot of the clusters
+ggplot(mall_customers, aes(x = AnnualIncome, y = SpendingScore,
+color = Cluster)) +
+ geom_point(size = 3) +
+ scale_color_manual(values = c("red", "blue",
+"green","yellow","black")) +
+ labs(title = "K-Means Clustering of Mall Customers",
+ x = "Annual Income (k$)",
+ y = "Spending Score (1-100)") +
+ theme_minimal()
+# Scatter plot with cluster centers
+fviz_cluster(kmeans_result, data = data_scaled,
+ geom = "point",
+ ellipse.type = "norm",
+ ggtheme = theme_minimal(),
+ palette = c("red", "blue", "green","yellow","black"))
+kmeans_result
+
+
+
+ASSIGNMENT NO 6-Aim: To compute TF-IDF (Term Frequency-Inverse Document Frequency) values of words
+from different types of corpora using R programming. The analysis will include:
+1. A corpus with unique values.
+2. A corpus with similar documents.
+3. A single word repeated multiple times in multiple documents.
+
+
+code:
+# Install necessary R packages
+%%R
+install.packages('tm', repos='https://cran.rstudio.com/')
+install.packages('tidytext', repos='https://cran.rstudio.com/')
+install.packages('dplyr', repos='https://cran.rstudio.com/')
+%%R
+# Load necessary libraries
+library(tm)
+library(tidytext)
+library(dplyr)
+# Step 1: Create the corpora
+# Corpus with unique values
+corpus_unique <- Corpus(VectorSource(c("apple banana cherry",
+ "dog elephant fish",
+ "grape hat ink")))
+# Corpus with similar documents
+corpus_similar <- Corpus(VectorSource(c("apple apple banana",
+ "apple banana cherry",
+ "banana cherry apple")))
+# Corpus with a single word repeated multiple times
+corpus_repeated <- Corpus(VectorSource(c("apple apple apple",
+ "apple apple apple",
+ "apple apple apple")))
+# Step 2: Preprocess the text
+preprocess_corpus <- function(corpus) {
+ corpus <- tm_map(corpus, content_transformer(tolower)) # Convert to lower case
+ corpus <- tm_map(corpus, removePunctuation) # Remove punctuation
+ corpus <- tm_map(corpus, removeNumbers) # Remove numbers
+ corpus <- tm_map(corpus, removeWords, stopwords("english")) # Remove stopwords
+ corpus <- tm_map(corpus, stripWhitespace) # Strip whitespace
+ return(corpus)
+}
+# Apply preprocessing
+corpus_unique <- preprocess_corpus(corpus_unique)
+corpus_similar <- preprocess_corpus(corpus_similar)
+corpus_repeated <- preprocess_corpus(corpus_repeated)
+# Step 3: Create Document-Term Matrices and compute TF-IDF values
+# Document-Term Matrices
+dtm_unique <- DocumentTermMatrix(corpus_unique)
+dtm_similar <- DocumentTermMatrix(corpus_similar)
+dtm_repeated <- DocumentTermMatrix(corpus_repeated)
+# Compute TF-IDF
+tfidf_unique <- weightTfIdf(dtm_unique)
+tfidf_similar <- weightTfIdf(dtm_similar)
+tfidf_repeated <- weightTfIdf(dtm_repeated)
+# Step 4: Convert to data frame for better readability
+tfidf_to_df <- function(tfidf) {
+ return(as.data.frame(as.matrix(tfidf)))
+}
+# Convert TF-IDF matrices to data frames
+df_tfidf_unique <- tfidf_to_df(tfidf_unique)
+df_tfidf_similar <- tfidf_to_df(tfidf_similar)
+df_tfidf_repeated <- tfidf_to_df(tfidf_repeated)
+# Step 5: Display the TF-IDF values
+cat("TF-IDF for Unique Corpus:\n")
+print(df_tfidf_unique)
+cat("\nTF-IDF for Similar Corpus:\n")
+print(df_tfidf_similar)
+cat("\nTF-IDF for Repeated Word Corpus:\n")
+print(df_tfidf_repeated)
+
+
+
+assignment no 7-Aim: Analytical representation of Linear Regression using Movie recommendation
+dataset
+
+code:
+library(ggplot2)
+
+
+movies_data <- read.csv("C:/Users/Hp/Documents/movies_data.csv")
+head(movies_data)
+column_names <- colnames(movies_data)
+print(column_names)
+
+str(movies_data)
+
+movies_data <- na.omit(movies_data)
+
+model <- lm(Box.Office ~ Budget + Running.time + IMDb.score, data = movies_data)
+# Summary of the model to see coefficients and significance
+summary(model)
+
+movies_data$predicted <- predict(model)
+
+
+# Visualize the relationship between predicted and actual Box Office earnings
+ggplot(movies_data, aes(x = predicted, y = Box.Office)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "blue") +
+  labs(title = "Predicted vs Actual Box Office Earnings",
+       x = "Predicted Box Office",
+       y = "Actual Box Office") +
+  theme_minimal()
+
+# Check residuals to validate the model
+ggplot(movies_data, aes(x = predicted, y = residuals(model))) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residuals vs Predicted",
+       x = "Predicted Box Office",
+       y = "Residuals") +
+  theme_minimal()
+
+
+
+assignment no 8=
+
+from pyspark.ml.linalg import Vectors
+denseVec = Vectors.dense(1.0, 2.0, 3.0)
+size = 3
+idx = [1, 2] # locations of non-zero elements in vector
+values = [2.0, 3.0]
+sparseVec = Vectors.sparse(size, idx, values)
+# COMMAND ----------
+df = spark.read.json("/data/simple-ml")
+df.orderBy("value2").show()
+# COMMAND ----------
+from pyspark.ml.feature import RFormula
+supervised = RFormula(formula="lab ~ . + color:value1 + color:value2")
+# COMMAND ----------
+fittedRF = supervised.fit(df)
+preparedDF = fittedRF.transform(df)
+preparedDF.show()
+# COMMAND ----------
+train, test = preparedDF.randomSplit([0.7, 0.3])
+# COMMAND ----------
+from pyspark.ml.classification import LogisticRegression
+lr = LogisticRegression(labelCol="label",featuresCol="features")
+# COMMAND ----------
+print lr.explainParams()
+# COMMAND ----------
+fittedLR = lr.fit(train)
+# COMMAND ----------
+train, test = df.randomSplit([0.7, 0.3])
+# COMMAND ----------
+rForm = RFormula()
+lr = LogisticRegression().setLabelCol("label").setFeaturesCol("features")
+# COMMAND ----------
+from pyspark.ml import Pipeline
+stages = [rForm, lr]
+pipeline = Pipeline().setStages(stages)
+# COMMAND ----------
+from pyspark.ml.tuning import ParamGridBuilder
+params = ParamGridBuilder()\
+ .addGrid(rForm.formula, [
+ "lab ~ . + color:value1",
+ "lab ~ . + color:value1 + color:value2"])\
+ .addGrid(lr.elasticNetParam, [0.0, 0.5, 1.0])\
+ .addGrid(lr.regParam, [0.1, 2.0])\
+ .build()
+# COMMAND ----------
+from pyspark.ml.evaluation import BinaryClassificationEvaluator
+evaluator = BinaryClassificationEvaluator()\
+ .setMetricName("areaUnderROC")\
+ .setRawPredictionCol("prediction")\
+ .setLabelCol("label")
+# COMMAND ----------
+from pyspark.ml.tuning import TrainValidationSplit
+tvs = TrainValidationSplit()\
+ .setTrainRatio(0.75)\
+ .setEstimatorParamMaps(params)\
+ .setEstimator(pipeline)\
+ .setEvaluator(evaluator)
+# COMMAND ----------
+tvsFitted = tvs.fit(train)
+# COMMAND ----------
+
+
+assignment no 9- Aim: Social Network Analysis using R (for example: Community Detection Algorithm
+
+code:
+install.packages("igraph")
+install.packages("sna")
+library(igraph)
+library(network)
+library(sna)
+plot(make_full_graph(8, directed=FALSE))
+Ring_Graph <- make_ring(12, directed = FALSE, mutual =FALSE, circular = TRUE)
+# try for False
+plot(Ring_Graph)
+Star_Graph <- make_star(12, center = 4)
+plot(Star_Graph)
+gnp_Graph <- sample_gnp(20, 0.5, directed = FALSE, loops =FALSE)
+plot(gnp_Graph)
+gnp_Graph1 <- sample_gnp(7, 0.4, directed = FALSE, loops = FALSE)
+plot(gnp_Graph1)
+node_degrees <- degree(gnp_Graph)
+print(node_degrees)
+sample_graph <- sample_gnp(10, 0.3, directed = FALSE)
+plot(sample_graph)
+sample_density <- edge_density(sample_graph, loops = FALSE)
+sample_density
+sample_graph <- sample_gnp(20, 0.3, directed = FALSE, loops= FALSE)
+plot(sample_graph)
+clique_num(sample_graph)
+components(sample_graph)
+setwd("D:\\MIT ADT\\LY - Sem 1\\BDA Lab\\Amreen Mam\\Assign 9")
+data <- read.csv("socialnetworkdata.csv")
+y <- data.frame(data$first, data$second)
+net <- graph.data.frame(y, directed=T)
+V(net)
+E(net)
+plot(net)
+hist(degree(net), col='purple', main = "histogram of node degree",ylab = 'freq', xlab =
+'vertices degree')
+set.seed(222)
+plot(net,
+vertex.color = 'cyan',
+vertext.size = 2,
+edge.arrow.size = 0.1,
+vertex.label.cex = 0.8)
+plot(net,
+vertex.color = rainbow(vcount(net)), # Use the number of vertices to generate colors
+vertex.size = degree(net) * 0.4, # Calculate vertex degrees and scale their size
+edge.arrow.size = 0.1, # Keep arrow size for edges
+layout = layout.fruchterman.reingold)
+hs <- hub_score(net)$vector
+hs
+as <- authority_score(net)$vector
+as
+set.seed(123)
+plot(net,
+vertex.size=hs*30,
+main = 'Hubs',
+vertex.color = rainbow(52),
+edge.arrow.size=0.1,
+layout = layout.kamada.kawai)
+undirected_net <- as.undirected(net, mode = "collapse")
+community <- cluster_louvain(undirected_net)
+plot(undirected_net,
+vertex.color = membership(community), # Color vertices by community membership
+vertex.size = degree(undirected_net) * 0.4, # Size vertices by degree
+edge.arrow.size = 0.1, # Edge arrow size
+main = "Community Detection using Louvain Method")
+
+
+
+
+link batch b - https://drive.google.com/drive/folders/15-mURVzVGbg8mNT5IY2AC9fxVGrxhL0x?usp=sharing
