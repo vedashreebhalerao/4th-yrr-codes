@@ -1,0 +1,659 @@
+**ASSIGN 1**
+
+setwd("D:\\MIT ADT\\LY - Sem 1\\BDA Lab\\Amreen Mam\\Assign 1")
+
+getwd()
+
+unzip("archive.zip", exdir = "D:\\MIT ADT\\LY - Sem 1\\BDA Lab\\Amreen Mam\\Assign 1")
+
+data <- read.csv("Dimpatient.csv")
+
+head(data, 10)
+
+tail(data,10)
+
+num_lines <- nrow(data)
+cat("Number of lines in the dataset:", num_lines, "\n")
+
+data$PatientGender <- as.factor(data$PatientGender)
+data$City <- as.factor(data$City)
+data$State <- as.factor(data$State)
+
+summary(data)
+
+
+library(ggplot2)
+
+# Bar plot for PatientGender
+gender_plot <- ggplot(data, aes(x = PatientGender)) +
+  geom_bar(fill = "lightgreen", color = "black") +
+  labs(title = "Distribution of Patients by Gender", x = "Gender", y = "Count") +
+  theme_minimal()
+
+# Display the plot
+print(gender_plot)
+
+
+
+**ASSIGN 2 - text analysis**
+
+install.packages("tm") # for text mining
+install.packages("SnowballC") # for text stemming
+install.packages("wordcloud") # word-cloud generator
+install.packages("RColorBrewer") # color palettes
+install.packages("ggplot2") # for plotting graphs
+
+library("tm")
+library("wordcloud")
+library("SnowballC")
+library("RColorBrewer")
+library("ggplot2")
+
+
+data <-   read.csv('D:\MIT ADT\LY - Sem 1\BDA Lab\Amreen Mam\Assign 2\preprocessed_kindle_review.csv',stringsAsFactors = FALSE)
+
+
+head(data)
+
+text_column <- data$reviewText
+TextDoc <- Corpus(VectorSource(text_column))
+
+toSpace <- content_transformer(function(x, pattern)gsub(pattern, " ", x))
+TextDoc <- tm_map(TextDoc, toSpace, "/")
+TextDoc <- tm_map(TextDoc, toSpace, "@")
+TextDoc <- tm_map(TextDoc, toSpace, "\\|")
+
+TextDoc <- tm_map(TextDoc, content_transformer(tolower))
+
+TextDoc <- tm_map(TextDoc, removeNumbers)
+
+TextDoc <- tm_map(TextDoc, removeWords, stopwords("english"))
+
+TextDoc <- tm_map(TextDoc, removeWords,c("kindle", "amazon", "product", "review", "customer",
+                                         "one", "two", "three", "four", "five"))
+
+TextDoc <- tm_map(TextDoc, removePunctuation)
+
+TextDoc <- tm_map(TextDoc, stripWhitespace)
+
+TextDoc <- tm_map(TextDoc, stemDocument)
+
+TextDoc_dtm <- TermDocumentMatrix(TextDoc)
+
+dtm_m <- as.matrix(TextDoc_dtm)
+
+dtm_v <- sort(rowSums(dtm_m), decreasing=TRUE)
+dtm_d <- data.frame(word=names(dtm_v), freq=dtm_v)
+
+head(dtm_d, 8)
+
+#           word freq
+#book       book 15694
+#stori     stori 11325
+#read       read 10920
+#like       like  6583
+#charact charact  5763
+#just       just  5492
+#love       love  5359
+#good       good  4411
+
+barplot(dtm_d[1:5,]$freq, las = 2, names.arg = dtm_d[1:5,]$word,
+        col ="purple", main ="Top 5 most frequent words",
+        ylab = "Word frequencies")
+
+set.seed(1234)
+
+wordcloud(words = dtm_d$word, freq = dtm_d$freq, min.freq = 5,
+          max.words=100, random.order=FALSE, rot.per=0.40,
+          colors=brewer.pal(8, "Dark2"))
+
+
+
+**ASSIGN 2.2 ** 
+
+setwd("D:\\MIT ADT\\LY - Sem 1\\BDA Lab\\Amreen Mam\\Assign 2.2")
+
+titanic = read.csv("titanic.csv")
+
+head(titanic)
+
+View(titanic)
+
+sapply(titanic, class)
+
+titanic$Survived=as.factor(titanic $Survived) 
+
+titanic $Sex=as.factor(titanic $Sex) 
+
+sapply(titanic, class)
+
+summary(titanic)
+
+sum(is.na(titanic))
+
+dropnull_titanic = titanic[rowSums(is.na(titanic))<=0,]
+
+slist = dropnull_titanic[dropnull_titanic$Survived==1,]
+
+nslist = dropnull_titanic[dropnull_titanic$Survived==0,]
+
+hist(slist$Age, xlab = "Age", ylab = "Freq")
+
+barplot(table(nslist$Sex), xlab = "Gender", ylab = "Freq")
+
+
+
+
+
+**ASSIGN 2.3 ** 
+
+# 
+# Inclass Assignment:
+#   1.	Reading Specific Cells 
+# 2.	Skipping Columns
+
+install.packages("readxl")
+install.packages("writexl")
+
+library(readxl)
+library(writexl)
+
+data <- read_excel("file_show (6).xlsx")
+iris <- read_excel("file_show (6).xlsx", sheet = "iris")
+
+bank_full <- read_xlsx("file_show (6).xlsx", sheet = 1)
+
+sdbank_full <- read_xlsx("file_show (6).xlsx", sheet = 1, skip=5)
+
+print(data)
+
+print(iris)
+
+csv_data_salary <- read_xlsx("file_show (4).xlsx")
+
+print(nrow(csv_data_salary))
+
+print(ncol(csv_data_salary))
+
+result <- csv_data_salary[csv_data_salary$salary > 60000, c("name", "salary")]
+
+#create dfs -> then combine into 1 single df-> write this on a csv file
+
+Country <- c("China", "India", "US", "Indonesia", "Pakistan")
+Population_1_july_2018 <- c("1,427,647,786", "1,352, 642,280",
+                            "327,096,265", "267,670,543", "212, 228,286")
+Population_1_july_2019 <- c("1,433,783,686", "1,366,417,754",
+                            "329,064,917", "270,625,568", "216, 565,318")
+change_in_percents <- c("+0.43%", "+1.02%", "+0.60%", "+1.10%",
+                        "+2.04%")
+
+
+SDF <- data.frame(Country, Population_1_july_2018, Population_1_july_2019, change_in_percents)
+
+write.csv(SDF, "Cpopulation.csv")
+
+library(readr)
+
+read.csv("Cpopulation.csv")
+
+
+#PLOT
+View(iris)
+
+pl <- iris$PetalLengthCm
+wl <- iris$PetalWidthCm
+
+plot(pl, wl)
+
+plot(pl, wl, pch=25)
+
+plot(pl, wl, pch=25, col="purple")
+
+library(ggplot2)
+
+ggplot(data=iris) #canvas creation
+
+ggplot(data=iris) + aes(x=PetalLengthCm, y = PetalWidthCm) + geom_point(aes(color = Species, shape = Species))
+
+
+
+
+
+
+**ASSIGN 4 Pyspark**
+
+please find the steps to be used to run on google colab
+@everyon please let me know if anything needs to add
+
+# install open jdk
+!apt-get install openjdk-8-jdk-headless -qq
+
+# install pyspark
+!pip install -q pyspark
+
+
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import explode, split, col
+import os
+
+# Initialize a Spark session
+spark = SparkSession.builder.master("local[*]").appName("WordCount").getOrCreate()
+
+# Create or upload a text file (for example purposes, we'll use a small text)
+text = ["Hello world", "Hello from PySpark", "Word count with PySpark"]
+file_path = "example.txt"
+
+try:
+    # Write the text to a file
+    with open(file_path, "w") as f:
+        for line in text:
+            f.write(line + "\n")
+
+    # Read the text file into a DataFrame
+    text_df = spark.read.text(file_path)
+
+    # Split lines into words and explode them into separate rows
+    words_df = text_df.select(explode(split(col("value"), " ")).alias("word"))
+
+    # Perform word count
+    word_counts_df = words_df.groupBy("word").count()
+
+    # Collect the word counts to the driver and print them
+    word_counts = word_counts_df.collect()
+
+    for row in word_counts:
+        print(f"{row['word']}: {row['count']}")
+
+except Exception as e:
+    print(f"An error occurred: {e}")
+
+finally:
+    # Cleanup: Remove the temporary file
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    # Stop the Spark session
+    spark.stop()
+
+
+**ASSIGN 5**
+
+from pyspark.sql import SparkSession
+
+# Initialize a SparkSession
+spark = SparkSession.builder.appName("Read CSV to DataFrame").getOrCreate()
+
+# Path to your CSV file
+file_path = "D:\MIT ADT\LY - Sem 1\BDA Lab\Amreen Mam\Assign 1\Dimpatient.csv"
+
+# Read the CSV file into a DataFrame
+df = spark.read.csv(file_path, header=True, inferSchema=True)
+
+# Show the contents of the DataFrame
+df.show()
+
+# Stop the SparkSession
+spark.stop()
+
+
+
+ASSIGN 4 - HIVE TABLE AND PYSPARK
+
+
+# Step 1: Initialize SparkSession for reading CSV into DataFrame
+spark = SparkSession.builder.appName("ReadCSV").enableHiveSupport().getOrCreate()
+df = spark.read.csv("ds_salaries.csv", header=True, inferSchema=True)
+df.show()
+df.printSchema()
+
+
+import os
+os.environ["HADOOP_HOME"] = "D:\MIT ADT\LY - Sem 1\BDA Lab\Sir\Assign 4\hadoop-3.4.0-src" 
+spark.sql("CREATE DATABASE IF NOT EXISTS mydb")
+# Step 3: Create and Query a Hive Table in PySpark
+
+# Create a new Hive database (if it doesn't exist) and use it
+
+spark.sql("USE mydb")
+# Create a Hive table
+spark.sql("""
+CREATE TABLE IF NOT EXISTS my_table (
+    id INT,
+    name STRING,
+    age INT
+) ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+""")
+# Load data into the Hive table
+spark.sql("LOAD DATA LOCAL INPATH 'path/to/your/csvfile.csv' INTO TABLE my_table")
+
+# Query the Hive table and display results
+result = spark.sql("SELECT * FROM my_table")
+result.show()
+
+
+ASSIGNMENT 5 - Kmeans
+
+setwd("D:\\MIT ADT\\LY - Sem 1\\BDA Lab\\Sir\\Assign 5")
+
+# Install the required libraries if not already installed
+install.packages("ggplot2")
+install.packages("factoextra")
+install.packages("dplyr")
+
+install.packages("colorspace")
+# Load the required libraries
+library(ggplot2)
+library(factoextra)
+library(dplyr)
+
+#Load the Mall Customers Dataset
+mall_customers = read.csv("Mall_Customers.csv")
+head(mall_customers)
+
+names(mall_customers)
+print(colnames(mall_customers))
+
+data <- mall_customers[c("Annual.Income","Spending.Score")]
+head(data)
+
+# Scale the data (optional, but recommended for K-Means)
+data_scaled <- scale(data)
+print("scaled data")
+head(data_scaled)
+# calculated WSS for each clustes from 1 to 15
+wss <- numeric(15)
+for (k in 1:15) wss[k] <- sum(kmeans(data_scaled, centers=k,
+                                     nstart=25)$withinss)
+
+# plot the graph of number of clusters vs WSS
+plot(1:15, wss, type="b", xlab="Number of Clusters", ylab="WSS")
+#Plots both points and lines. The points are plotted at each data value, and they’re connected by lines.
+# Elbow method to find the optimal number of clusters
+fviz_nbclust(data_scaled, kmeans, method = "wss") + 
+  geom_vline(xintercept = 5, linetype = 2) +
+  labs(subtitle = "Elbow method")
+
+
+# Silhouette method
+fviz_nbclust(data_scaled, kmeans, method = "silhouette") +
+  labs(subtitle = "Silhouette method")
+  
+# Apply K-Means clustering with 3 clusters
+set.seed(123)  # Set seed for reproducibility in case python- random_state
+kmeans_result <- kmeans(data_scaled, centers = 5, nstart = 25)
+
+# Add the cluster assignments to the original dataset
+mall_customers$Cluster <- as.factor(kmeans_result$cluster)
+tail(mall_customers)
+
+# Scatter plot of the clusters
+ggplot(mall_customers, aes(x = Annual.Income, y = Spending.Score, color = Cluster)) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("red", "blue", "green","yellow","black")) +
+  labs(title = "K-Means Clustering of Mall Customers",
+       x = "Annual Income (k$)",
+       y = "Spending Score (1-100)") +
+  theme_minimal()
+
+# Scatter plot with cluster centers
+fviz_cluster(kmeans_result, data = data_scaled,
+             geom = "point",
+             ellipse.type = "norm",
+             ggtheme = theme_minimal(),
+             palette = c("red", "blue", "green","yellow","black"))
+kmeans_result
+
+
+
+
+
+ASSIGN - 6 TF IDF IPYNB
+
+import nltk
+from nltk.corpus import stopwords
+from math import log
+import pandas as pd
+# Download stopwords list if you haven't
+nltk.download('stopwords')
+
+# Define stop words
+stop_words = set(stopwords.words('english'))
+# Sample corpus
+corpus = [
+    "The car is driven on the road",
+    "The truck is driven on the highway",
+    "The car is blue",
+    "The car is fast and driven on the road",
+    "I like the blue car"
+]
+
+
+# Step 1: Tokenization with stop word removal
+def tokenize(doc):
+    # Tokenize and remove stop words
+    return [word.lower() for word in doc.split() if word.lower() not in stop_words]
+
+# Step 2: Create vocabulary (all unique terms excluding stop words)
+vocabulary = list(set(word for doc in corpus for word in tokenize(doc)))
+
+# Step 3: Calculate Term Frequency (TF) for all terms in each document
+def term_frequency_matrix(corpus, vocabulary):
+    tf_matrix = []
+    for doc in corpus:
+        tf_vector = []
+        doc_tokens = tokenize(doc)
+        for term in vocabulary:
+            tf = doc_tokens.count(term) / len(doc_tokens)  # Relative frequency
+            tf_vector.append(tf)
+        tf_matrix.append(tf_vector)
+    return tf_matrix
+
+# Step 4: Calculate Document Frequency (DF) for each term
+def document_frequency(term, corpus):
+    return sum(1 for doc in corpus if term in tokenize(doc))
+
+# Step 5: Calculate Inverse Document Frequency (IDF) for each term
+def inverse_document_frequency_matrix(corpus, vocabulary):
+    N = len(corpus)
+    idf_vector = []
+    for term in vocabulary:
+        df = document_frequency(term, corpus)
+        idf = log(N / (df))  # Adding 1 to avoid division by zero
+        idf_vector.append(idf)
+    return idf_vector
+
+# Step 6: Calculate TF-IDF matrix by multiplying TF and IDF
+def tfidf_matrix(tf_matrix, idf_vector):
+    tfidf_matrix = []
+    for tf_vector in tf_matrix:
+        tfidf_vector = [tf * idf for tf, idf in zip(tf_vector, idf_vector)]
+        tfidf_matrix.append(tfidf_vector)
+    return tfidf_matrix
+
+# Step 7: Compute TF, IDF, and TF-IDF
+tf_matrix = term_frequency_matrix(corpus, vocabulary)
+idf_vector = inverse_document_frequency_matrix(corpus, vocabulary)
+tfidf = tfidf_matrix(tf_matrix, idf_vector)
+
+# Step 8: Convert to DataFrames for display
+df_tf = pd.DataFrame(tf_matrix, columns=vocabulary)
+df_idf = pd.DataFrame([idf_vector], columns=vocabulary)
+df_tfidf = pd.DataFrame(tfidf, columns=vocabulary)
+
+# Step 9: Display TF, IDF, and TF-IDF
+print("Term Frequency (TF):")
+print(df_tf)
+
+print("\nInverse Document Frequency (IDF):")
+print(df_idf)
+
+print("\nTF-IDF:")
+print(df_tfidf)
+
+
+
+ASSIGN 7 - LINEAR REGRESSION
+
+
+movies_data <- data.frame(
+  MovieID = 1:10,
+  Genre = factor(c("Action", "Comedy", "Drama", "Action", "Comedy", "Drama", "Action", "Comedy", "Drama", "Action")),
+  Budget = c(15000000, 5000000, 10000000, 20000000, 6000000, 12000000, 18000000, 5500000, 11000000, 16000000),
+  Rating = c(7.8, 6.5, 8.2, 7.9, 6.9, 8.0, 7.5, 6.7, 8.1, 7.7)
+)
+
+write.csv(movies_data, file = "movies_data.csv", row.names = FALSE)
+
+print(movies_data)
+
+install.packages("ggplot2")
+install.packages("dplyr")
+
+library(ggplot2)
+library(dplyr)
+
+
+head(movies_data)
+
+str(movies_data)
+
+movies_data$Genre <- as.factor(movies_data$Genre)
+
+summary(movies_data)
+
+set.seed(123)
+
+# Create a training set (70%) and test set (30%)
+sample_indices <- sample(seq_len(nrow(movies_data)), size = 0.7 * nrow(movies_data))
+train_set <- movies_data[sample_indices, ]
+test_set <- movies_data[-sample_indices, ]
+
+model <- lm(Rating ~ Genre + Budget, data = train_set)
+
+# Summary of the model
+summary(model)
+
+predictions <- predict(model, newdata = test_set)
+
+# Combine predictions with actual values
+results <- data.frame(Actual = test_set$Rating, Predicted = predictions)
+
+# Calculate Mean Squared Error
+mse <- mean((results$Actual - results$Predicted)^2)
+print(paste("Mean Squared Error:", mse))
+
+
+ggplot(results, aes(x = Actual, y = Predicted)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, color = "red") +
+  labs(title = "Actual vs Predicted Ratings", x = "Actual Rating", y = "Predicted Rating")
+
+
+residuals <- results$Actual - results$Predicted
+
+ggplot(data.frame(Residuals = residuals), aes(x = Residuals)) +
+  geom_histogram(bins = 30, fill = "blue", color = "black") +
+  labs(title = "Histogram of Residuals", x = "Residuals", y = "Frequency")
+
+
+
+ASSIGN 8 - KAFKA VIDEO
+
+https://youtu.be/oI7VAS9KSS4?si=SWYz0WHTmWSTsArS
+
+
+ASSIGN 9 - SOCIAL NETWORK ANALYSIS
+
+
+install.packages("igraph")
+install.packages("sna")
+
+library(igraph)
+library(network)
+library(sna)
+
+plot(make_full_graph(8, directed=FALSE))
+
+Ring_Graph <- make_ring(12, directed = FALSE, mutual =FALSE, circular = TRUE)
+# try for False
+plot(Ring_Graph)
+
+Star_Graph <- make_star(12, center = 4)
+plot(Star_Graph)
+
+gnp_Graph <- sample_gnp(20, 0.5, directed = FALSE, loops =FALSE)
+plot(gnp_Graph)
+
+gnp_Graph1 <- sample_gnp(7, 0.4, directed = FALSE, loops = FALSE)
+plot(gnp_Graph1)
+
+node_degrees <- degree(gnp_Graph)
+print(node_degrees)
+
+sample_graph <- sample_gnp(10, 0.3, directed = FALSE)
+plot(sample_graph)
+sample_density <- edge_density(sample_graph, loops = FALSE)
+sample_density
+
+sample_graph <- sample_gnp(20, 0.3, directed = FALSE, loops= FALSE)
+plot(sample_graph)
+clique_num(sample_graph)
+
+components(sample_graph)
+
+
+setwd("D:\\MIT ADT\\LY - Sem 1\\BDA Lab\\Amreen Mam\\Assign 9")
+data <- read.csv("socialnetworkdata.csv")
+y <- data.frame(data$first, data$second)
+net <- graph.data.frame(y, directed=T)
+V(net)
+E(net)
+plot(net)
+
+hist(degree(net), col='purple', main = "histogram of node degree",ylab = 'freq', xlab = 'vertices degree')
+
+
+set.seed(222)
+plot(net,
+     vertex.color = 'cyan',
+     vertext.size = 2,
+     edge.arrow.size = 0.1,
+     vertex.label.cex = 0.8)
+
+
+plot(net,
+     vertex.color = rainbow(vcount(net)),  # Use the number of vertices to generate colors
+     vertex.size = degree(net) * 0.4,      # Calculate vertex degrees and scale their size
+     edge.arrow.size = 0.1,                # Keep arrow size for edges
+     layout = layout.fruchterman.reingold)
+
+
+hs <- hub_score(net)$vector
+hs
+as <- authority_score(net)$vector
+as
+set.seed(123)
+plot(net,
+     vertex.size=hs*30,
+     main = 'Hubs',
+     vertex.color = rainbow(52),
+     edge.arrow.size=0.1,
+     layout = layout.kamada.kawai)
+
+
+undirected_net <- as.undirected(net, mode = "collapse")
+
+community <- cluster_louvain(undirected_net)
+
+plot(undirected_net,
+     vertex.color = membership(community),  # Color vertices by community membership
+     vertex.size = degree(undirected_net) * 0.4,  # Size vertices by degree
+     edge.arrow.size = 0.1,  # Edge arrow size
+     main = "Community Detection using Louvain Method")
+
+
+
+
+
+
